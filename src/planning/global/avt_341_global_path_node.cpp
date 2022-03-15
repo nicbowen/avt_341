@@ -73,17 +73,18 @@ int main(int argc, char *argv[])
   state.data = -1; // start up state
 
   float goal_dist, global_lookahead;
-  std::vector<double> waypoints_x_list, waypoints_y_list;
+  std::vector<double> waypoints_x_list, waypoints_y_list, waypoints_z_list;
   std::string display_type;
 
   std::vector<float> goal;
-  goal.resize(2, 0.0f);
+  goal.resize(3, 0.0f);
 
   n->get_parameter("~goal_dist", goal_dist, 3.0f);
   n->get_parameter("~display", display_type, avt_341::visualization::default_display);
   n->get_parameter("~global_lookahead", global_lookahead, 50.0f);
   n->get_parameter("/waypoints_x", waypoints_x_list, std::vector<double>(0));
   n->get_parameter("/waypoints_y", waypoints_y_list, std::vector<double>(0));
+  n->get_parameter("/waypoints_z", waypoints_z_list, std::vector<double>(0));
   
   int shutdown_behavior = 1;
   n->get_parameter("~shutdown_behavior", shutdown_behavior, 1);
@@ -93,9 +94,9 @@ int main(int argc, char *argv[])
   {
     std::cerr << "WARNING: " << waypoints_x_list.size() << " X COORDINATES WERE PROVIDED FOR " << waypoints_y_list.size() << " Y COORDINATES." << std::endl;
   }
-  if (waypoints_x_list.size() == 0 || waypoints_y_list.size() == 0)
+  if (waypoints_x_list.size() == 0 || waypoints_y_list.size() == 0 || waypoints_z_list.size() == 0)
   {
-    std::cerr << "WARNING: NO WAYPOINTS WERE LISTED IN /waypoints_x OR /waypoints_y." << std::endl;
+    std::cerr << "WARNING: NO WAYPOINTS WERE LISTED IN /waypoints_x OR /waypoints_y OR /waypoints_z." << std::endl;
     //return 2;
   }
 
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
       avt_341::msg::PoseStamped pose;
       pose.pose.position.x = static_cast<float>(waypoints_x_list[i]);
       pose.pose.position.y = static_cast<float>(waypoints_y_list[i]);
-      pose.pose.position.z = 0.0f;
+      pose.pose.position.z = static_cast<float>(waypoints_z_list[i]);
       pose.pose.orientation.w = 1.0f;
       pose.pose.orientation.x = 0.0f;
       pose.pose.orientation.y = 0.0f;
@@ -122,6 +123,7 @@ int main(int argc, char *argv[])
       // Initialize goal to first waypoint
     goal[0] = waypoints_x_list[0];
     goal[1] = waypoints_y_list[0];
+    goal[2] = waypoints_y_list[0];
     state.data = 0; // go active
     state_pub->publish(state);
   }
@@ -143,7 +145,8 @@ int main(int argc, char *argv[])
       current_waypoint = 0;
       goal[0] = current_waypoints.poses[current_waypoint].pose.position.x;
       goal[1] = current_waypoints.poses[current_waypoint].pose.position.y;
-      std::cout << "New waypoints! Updated goal " << goal[0] << ", " << goal[1] << std::endl;
+      goal[2] = current_waypoints.poses[current_waypoint].pose.position.z;
+      std::cout << "New waypoints! Updated goal " << goal[0] << ", " << goal[1] << ", " << goal[2] << std::endl;
       waypoints_rcvd = false;
       state.data = 0;  // go active
       state_pub->publish(state);

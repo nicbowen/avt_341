@@ -13,16 +13,20 @@ def evaluate_waypoint_parameters(context, *args, **kwargs):
     waypoints_file_path = LaunchConfiguration('waypoints_file').perform(context)
     waypoints_x = "[ ]"
     waypoints_y = "[ ]"
+    waypoints_z = "[ ]"
     with open(waypoints_file_path, 'r') as f:
         for line in f.readlines():
             if "waypoints_x" in line:
                 waypoints_x = line.split(":")[1]
             if "waypoints_y" in line:
                 waypoints_y = line.split(":")[1]
+            if "waypoints_z" in line:
+                waypoints_z = line.split(":")[1]
 
     return [
         DeclareLaunchArgument('waypoints_x', description="List of waypoint x coordinates. Will override waypoints_file is specified.", default_value=waypoints_x),
         DeclareLaunchArgument('waypoints_y', description="List of waypoint y coordinates. Will override waypoints_file is specified.", default_value=waypoints_y),
+        DeclareLaunchArgument('waypoints_z', description="List of waypoint z coordinates. Will override waypoints_file is specified.", default_value=waypoints_z),
     ]
 
 
@@ -174,6 +178,7 @@ def generate_launch_description():
                 'display': display_type,
                 '/waypoints_x': launch.substitutions.LaunchConfiguration('waypoints_x'),
                 '/waypoints_y': launch.substitutions.LaunchConfiguration('waypoints_y'),
+                '/waypoints_z': launch.substitutions.LaunchConfiguration('waypoints_z'),
             }],
         ),
         Node(
