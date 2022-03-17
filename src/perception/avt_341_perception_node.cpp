@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 	grid_created = false;
 
 	auto n = avt_341::node::init_node(argc, argv, "avt_341_perception_node");
-	auto pc_sub = n->create_subscription<avt_341::msg::PointCloud2>("avt_341/points",2,PointCloudCallback);
+	auto pc_sub = n->create_subscription<avt_341::msg::PointCloud2>("velodyne/points",2,PointCloudCallback);
     auto odom_sub = n->create_subscription<avt_341::msg::Odometry>("avt_341/odometry",10, OdometryCallback);
     auto grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/occupancy_grid", 1);
     auto grid_segmentation_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/segmentation_grid", 1);
@@ -213,6 +213,9 @@ int main(int argc, char *argv[]) {
 		if (grid_created && elapsed_time > warmup_time) {
 			avt_341::msg::OccupancyGrid grd;
       		grd = grid.GetGrid();
+			//replace actual occupancy grid with 0's (completely traversable)
+			std::vector<int8_t> fakeGrid(grd.data.size(), (int8_t)0);
+  			grd.data = fakeGrid;
 			grd.header.stamp = n->get_stamp();
 			grid_pub->publish(grd);
 
