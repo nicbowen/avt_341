@@ -214,8 +214,9 @@ int main(int argc, char *argv[])
       curr_wp.data = current_waypoint;
       current_waypoint_pub->publish(curr_wp);
       dist_to_current_waypoint_pub->publish(dist_to_goal);
+      std::cerr << ros_path.poses.size() << " " << current_waypoint << " " << dist_to_goal.data << std::endl;
       if (nl % 20 == 0){ //update every second
-        std::cout << "Distance to goal " << current_waypoint<<" = " << d << std::endl;
+        std::cout << "Distance to goal " << current_waypoint <<" = " << d << std::endl;
       }
       if (current_waypoint == current_waypoints.poses.size() - 1){  // last waypoint
         if (d<goal_dist || shutdown_condition){   // reached the goal

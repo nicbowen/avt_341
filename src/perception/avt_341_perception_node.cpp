@@ -151,14 +151,16 @@ int main(int argc, char *argv[]) {
 	grid_created = false;
 
 	auto n = avt_341::node::init_node(argc, argv, "avt_341_perception_node");
-	auto pc_sub = n->create_subscription<avt_341::msg::PointCloud2>("velodyne/points",2,PointCloudCallback);
+	auto pc_sub = n->create_subscription<avt_341::msg::PointCloud2>("avt_341/points",2,PointCloudCallback);
     auto odom_sub = n->create_subscription<avt_341::msg::Odometry>("avt_341/odometry",10, OdometryCallback);
     auto grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/occupancy_grid", 1);
+	auto nav2_grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("local_costmap/costmap", 1);
+	auto nav2_glob_grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("global_costmap/costmap", 1);
     auto grid_segmentation_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/segmentation_grid", 1);
 
-    float grid_width, grid_height;
-    n->get_parameter("~grid_width", grid_width, 200.0f);
-    n->get_parameter("~grid_height", grid_height, 200.0f);
+	//set grid width to encompass entire scene space
+	float grid_width = 800.0f;
+	float grid_height = grid_width;
     grid.SetSize(grid_width,grid_height);
 
     float grid_res, grid_llx, grid_lly, warmup_time, thresh, grid_dilate_x, grid_dilate_y, grid_dilate_proportion;
@@ -210,14 +212,19 @@ int main(int argc, char *argv[]) {
   int nloops = 0;
 	while (avt_341::node::ok()){
 		double elapsed_time = (n->get_now_seconds()-start_time);
+		// grid_created = true;
 		if (grid_created && elapsed_time > warmup_time) {
 			avt_341::msg::OccupancyGrid grd;
       		grd = grid.GetGrid();
-			//replace actual occupancy grid with 0's (completely traversable)
-			std::vector<int8_t> fakeGrid(grd.data.size(), (int8_t)0);
-  			grd.data = fakeGrid;
-			grd.header.stamp = n->get_stamp();
 			grid_pub->publish(grd);
+
+			//replace actual occupancy grid with 0's (completely traversable)
+			// std::vector<int8_t> fakeGrid(grd.data.size() * 3, (int8_t)0);
+  			// grd.data = fakeGrid;
+			// grd.header.stamp = n->get_stamp();
+			// grid_pub->publish(grd);
+			// nav2_grid_pub->publish(grd);
+			// nav2_glob_grid_pub->publish(grd);
 
 			if(grid.has_segmentation()){
 				grd = grid.GetGrid(false, true);

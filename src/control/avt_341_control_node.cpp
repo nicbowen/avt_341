@@ -235,7 +235,7 @@ int main(int argc, char *argv[]){
     }
 
     // publish the driving command
-    std::cerr << "throttle: " << dc.linear.x << " brake: " << dc.linear.y << " steering: " << dc.angular.z << std::endl;
+    // std::cerr << "throttle: " << dc.linear.x << " brake: " << dc.linear.y << " steering: " << dc.angular.z << std::endl;
     dc_pub->publish(dc);
     current_brake_value = dc.linear.y;
     current_throttle_value = dc.linear.x;
