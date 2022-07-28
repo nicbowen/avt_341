@@ -21,7 +21,6 @@ def generate_launch_description():
         avt_341_package_dir,
         'config',
         'waypoints-loop-unreal-01.yaml'
-        # 'waypoints.yaml'
     )
     avt_341_dir = get_package_share_directory('avt_341')
     base_launch = launch.actions.IncludeLaunchDescription(
@@ -30,17 +29,16 @@ def generate_launch_description():
                           'robot_description': robot_desc,
                           'use_sim_time': 'False',
                           'goal_dist': '5.0',
-                          'path_look_ahead': '30.0'}.items()
+                          'path_look_ahead': '40.0',
+                          'stitch_lidar_points': 'False',
+                          'use_registered': 'False',
+                          'slope_threshold': '2.5',
+                          'vehicle_width': '5.0',
+                          'grid_dilate': 'True',
+                          'grid_dilate_y': '3.0'}.items()
     )
 
     launch_description = LaunchDescription([
-        # Node(
-        #     package='avt_341',
-        #     executable='avt_341_sim_test_node',
-        #     name='sim_test_node',
-        #     output='screen',
-        #     parameters=[{'use_sim_time': False}],
-        # ),
         base_launch
     ])
 

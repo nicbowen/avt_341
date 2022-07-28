@@ -33,9 +33,6 @@ void OdometryCallback(avt_341::msg::OdometryPtr rcv_odom)
 void MapCallback(avt_341::msg::OccupancyGridPtr rcv_grid)
 {
   current_grid = *rcv_grid;
-  //replace actual occupancy grid with 0's (completely traversable)
-  std::vector<int8_t> fakeGrid(current_grid.data.size(), (int8_t)0);
-  current_grid.data = fakeGrid;
 }
 
 void SegmentationMapCallback(avt_341::msg::OccupancyGridPtr rcv_grid){

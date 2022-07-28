@@ -218,14 +218,6 @@ int main(int argc, char *argv[]) {
       		grd = grid.GetGrid();
 			grid_pub->publish(grd);
 
-			//replace actual occupancy grid with 0's (completely traversable)
-			// std::vector<int8_t> fakeGrid(grd.data.size() * 3, (int8_t)0);
-  			// grd.data = fakeGrid;
-			// grd.header.stamp = n->get_stamp();
-			// grid_pub->publish(grd);
-			// nav2_grid_pub->publish(grd);
-			// nav2_glob_grid_pub->publish(grd);
-
 			if(grid.has_segmentation()){
 				grd = grid.GetGrid(false, true);
 				grd.header.stamp = n->get_stamp();

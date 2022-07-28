@@ -32,9 +32,6 @@ void OdometryCallback(avt_341::msg::OdometryPtr rcv_odom){
 
 void GridCallback(avt_341::msg::OccupancyGridPtr rcv_grid){
   grid = *rcv_grid;
-  //replace actual occupancy grid with 0's (completely traversable)
-  std::vector<int8_t> fakeGrid(grid.data.size(), (int8_t)0);
-  grid.data = fakeGrid;
   new_grid_rcvd = true;
 }
 
@@ -172,6 +169,7 @@ int main(int argc, char *argv[]){
       float urx = std::max({lf_bounds_x, rf_bounds_x, lr_bounds_x, rr_bounds_x});
       float ury = std::max({lf_bounds_y, rf_bounds_y, lr_bounds_y, rr_bounds_y});
 
+      dilation_factor = 2.0f;
       if (new_grid_rcvd) planner.DilateGrid(grid, dilation_factor, llx, lly, urx, ury);
       if (new_seg_grid_rcvd) planner.DilateGrid(segmentation_grid, dilation_factor, llx, lly, urx, ury);
       // Note: if grid size gets large, DilateGrid can take a significant amount of time

@@ -31,9 +31,6 @@ void OdometryCallback(avt_341::msg::OdometryPtr rcv_odom){
 
 void GridCallback(avt_341::msg::OccupancyGridPtr rcv_grid){
   grid = *rcv_grid;
-  //replace actual occupancy grid with 0's (completely traversable)
-  std::vector<int8_t> fakeGrid(grid.data.size(), (int8_t)0);
-  grid.data = fakeGrid;
   new_grid_rcvd = true;
 }
 
