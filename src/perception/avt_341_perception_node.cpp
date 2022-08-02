@@ -154,13 +154,11 @@ int main(int argc, char *argv[]) {
 	auto pc_sub = n->create_subscription<avt_341::msg::PointCloud2>("avt_341/points",2,PointCloudCallback);
     auto odom_sub = n->create_subscription<avt_341::msg::Odometry>("avt_341/odometry",10, OdometryCallback);
     auto grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/occupancy_grid", 1);
-	auto nav2_grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("local_costmap/costmap", 1);
-	auto nav2_glob_grid_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("global_costmap/costmap", 1);
     auto grid_segmentation_pub = n->create_publisher<avt_341::msg::OccupancyGrid>("avt_341/segmentation_grid", 1);
 
-	//set grid width to encompass entire scene space
-	float grid_width = 800.0f;
-	float grid_height = grid_width;
+	float grid_width, grid_height;
+	n->get_parameter("~grid_width", grid_width, 200.0f);
+	n->get_parameter("~grid_height", grid_height, 200.0f);
     grid.SetSize(grid_width,grid_height);
 
     float grid_res, grid_llx, grid_lly, warmup_time, thresh, grid_dilate_x, grid_dilate_y, grid_dilate_proportion;
@@ -212,7 +210,6 @@ int main(int argc, char *argv[]) {
   int nloops = 0;
 	while (avt_341::node::ok()){
 		double elapsed_time = (n->get_now_seconds()-start_time);
-		// grid_created = true;
 		if (grid_created && elapsed_time > warmup_time) {
 			avt_341::msg::OccupancyGrid grd;
       		grd = grid.GetGrid();
